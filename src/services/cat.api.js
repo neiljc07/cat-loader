@@ -1,7 +1,10 @@
 import axios from 'axios';
-import configs from '../config.json';
-import * as ENDPOINTS from '../constants/endpoints';
+import * as Endpoints from '../constants/endpoints';
 
 export function getBreeds() {
-  return axios.get(configs.CAT_API_URL + ENDPOINTS.CAT.breeds);
+  return axios.get(Endpoints.BREEDS);
+}
+
+export function getByBreed(id, page = 0, limit = 10, orderBy = 'Asc') {
+  return axios.get(Endpoints.SEARCH_BY_BREED + `?breed_id=${id}&page=${page}&limit=${limit}&order=${orderBy}`);
 }
