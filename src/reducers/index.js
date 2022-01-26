@@ -2,7 +2,7 @@ import { APPEND_CATS, FILL_BREEDS, FILL_CATS } from "../constants/action-types";
 
 const initialState = {
   breeds: [],
-  cats: [],
+  cats: []
 };
 
 function rootReducer(state = initialState, action) {

@@ -5,11 +5,14 @@ import { useSelector, useDispatch } from 'react-redux';
 import { APPEND_CATS, FILL_BREEDS, FILL_CATS } from '../constants/action-types';
 import CatThumbnail from '../components/CatThumbnail';
 import { Alert, Button } from 'react-bootstrap';
+import { useNavigate, useSearchParams } from 'react-router-dom';
 
 function Home() {
   // Initialize state variables and functions
   const breeds = useSelector((state) => state.breeds);
   const cats = useSelector((state) => state.cats);
+
+  const [searchParams] = useSearchParams();
 
   const [selectedBreed, setSelectedBreed] = useState('');
   const [currentPage, setCurrentPage] = useState('');
@@ -19,21 +22,9 @@ function Home() {
   const [isLoadButtonHidden, setIsLoadButtonHidden] = useState(false);
 
   const dispatch = useDispatch();
+  const navigate = useNavigate();
 
-  // Retrieve the value of the dropdown from the api on page load
-  useEffect(() => {
-    CatService.getBreeds()
-      .then((result) => {
-        dispatch({
-          type: FILL_BREEDS,
-          payload: result.data
-        });
-      })
-      .catch((err) => {
-        console.log(err);
-      });
-  }, []);
-
+  // Component Callbacks
   // Initialize the callback function when the user selects from the dropdown
   const selectCallback = (event) => {
     const value = event.target.value;
@@ -45,6 +36,25 @@ function Home() {
   const loadMoreCallback = () => {
     setCurrentPage(currentPage + 1);
     getByBreed(selectedBreed, currentPage + 1, true);
+  };
+
+  const viewCatCallback = (catId) => {
+    navigate(`/${catId}`);
+  };
+
+  // API Calls
+  const getBreeds = () => {
+    CatService.getBreeds()
+      .then((result) => {
+        // Set Results 
+        dispatch({
+          type: FILL_BREEDS,
+          payload: result.data
+        });
+      })
+      .catch((err) => {
+        console.log(err);
+      });
   };
 
   const getByBreed = (breed, page, appendResult) => {
@@ -80,6 +90,20 @@ function Home() {
       .finally(() => { setIsLoading(false) });
   };
 
+  // Retrieve the value of the dropdown from the api on page load
+  useEffect(() => {
+    getBreeds();
+
+    // Check if there's a get variable and set default value for dropdown
+    let defaultBreed = searchParams.get('breed');
+    if(defaultBreed) {
+      setSelectedBreed(defaultBreed);
+      setCurrentPage(0);
+      getByBreed(defaultBreed, 0, false);
+    }
+
+  }, []);
+
   return (
     <div className="container">
       <div className="row">
@@ -88,13 +112,14 @@ function Home() {
         </div>
       </div>
       <div className="row">
-        <div className="col">
+        <div className="col-md-3 col-xs-12">
           <Dropdown 
             label={'Breed'}
             options={breeds} 
             value={'id'} 
             text={'name'} 
             defaultLabel={'Breed'}
+            defaultValue={selectedBreed || searchParams.get('breed')}
             callback={selectCallback} 
             disabled={isLoading}  />
         </div>
@@ -106,12 +131,13 @@ function Home() {
             <div className="col-md-3 col-sm-6 col-12" key={cat.id}>
               <CatThumbnail 
                 imageUrl={cat.url}
-                actionLink={'#'} />
+                data={cat.id}
+                callback={viewCatCallback} />
             </div>
           )
         })}
 
-        {cats.length == 0 && 
+        {cats.length === 0 && 
           <div className="col">
             <Alert variant="danger">There are no cats available.</Alert>
           </div>
@@ -122,6 +148,7 @@ function Home() {
         <div className="row">
           <div className="col-md-3 col-sm-6 col-12">
             <Button 
+              className="mt-2"
               variant="success" 
               disabled={isLoading || isLoadButtonDisabled}
               onClick={loadMoreCallback}>
