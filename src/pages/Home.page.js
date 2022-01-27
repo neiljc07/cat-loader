@@ -40,6 +40,10 @@ function Home() {
   };
 
   const viewCatCallback = (cat) => {
+    if(isLoading) {
+      return;
+    }
+    
     dispatch({
       type: SELECT_CAT,
       payload: cat

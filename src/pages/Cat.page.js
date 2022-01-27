@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from "react";
 import { useDispatch } from "react-redux";
 import { useNavigate, useParams } from "react-router-dom";
-import { Button, Card } from "react-bootstrap";
+import { Alert, Button, Card } from "react-bootstrap";
 import * as CatService from '../services/cat.api';
 import { SET_ERROR } from "../constants/action-types";
 import { GENERIC_ERROR } from "../constants/messages";
@@ -11,6 +11,7 @@ function Cat() {
   const dispatch = useDispatch();
   const { id } = useParams();
   const [selectedCat, setSelectedCat] = useState(null);
+  const [isLoading, setIsLoading] = useState(true);
 
   useEffect(() => {
     // If the app can't find the cat object in app state
@@ -25,7 +26,12 @@ function Cat() {
             type: SET_ERROR,
             payload: GENERIC_ERROR
           });
+        })
+        .finally(() => {
+          setIsLoading(false);
         });
+    } else {
+      setIsLoading(false);
     }
   });
 
@@ -33,6 +39,10 @@ function Cat() {
     <div className="container">
       <div className="row">
         <div className="col-sm-12 col-md-8 offset-md-2">
+          {isLoading &&
+            <Alert variant="info">Loading...</Alert>
+          }
+
           {selectedCat && 
             <div>
               <Button 
