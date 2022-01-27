@@ -1,8 +1,10 @@
-import { APPEND_CATS, FILL_BREEDS, FILL_CATS } from "../constants/action-types";
+import { APPEND_CATS, FILL_BREEDS, FILL_CATS, SELECT_CAT, SET_ERROR } from "../constants/action-types";
 
 const initialState = {
   breeds: [],
-  cats: []
+  cats: [],
+  selectedCat: null,
+  errorMessage: ''
 };
 
 function rootReducer(state = initialState, action) {
@@ -23,6 +25,18 @@ function rootReducer(state = initialState, action) {
       return {
         ...state,
         cats: state.cats.concat(action.payload)
+      }
+
+    case SELECT_CAT:
+      return {
+        ...state,
+        selectedCat: action.payload
+      }
+
+    case SET_ERROR:
+      return {
+        ...state,
+        errorMessage: action.payload
       }
 
     default:

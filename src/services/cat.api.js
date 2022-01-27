@@ -6,5 +6,9 @@ export function getBreeds() {
 }
 
 export function getByBreed(id, page = 0, limit = 10, orderBy = 'Asc') {
-  return axios.get(Endpoints.SEARCH_BY_BREED + `?breed_id=${id}&page=${page}&limit=${limit}&order=${orderBy}`);
+  return axios.get(`${Endpoints.SEARCH_BY_BREED}?breed_id=${id}&page=${page}&limit=${limit}&order=${orderBy}`);
+}
+
+export function getById(id) {
+  return axios.get(`${Endpoints.SEARCH_BY_ID}/${id}`);
 }

@@ -2,10 +2,11 @@ import React, { useEffect, useState } from 'react';
 import Dropdown from '../components/Dropdown';
 import * as CatService from '../services/cat.api';
 import { useSelector, useDispatch } from 'react-redux';
-import { APPEND_CATS, FILL_BREEDS, FILL_CATS } from '../constants/action-types';
+import { APPEND_CATS, FILL_BREEDS, FILL_CATS, SELECT_CAT, SET_ERROR } from '../constants/action-types';
 import CatThumbnail from '../components/CatThumbnail';
 import { Alert, Button } from 'react-bootstrap';
 import { useNavigate, useSearchParams } from 'react-router-dom';
+import { GENERIC_ERROR } from '../constants/messages';
 
 function Home() {
   // Initialize state variables and functions
@@ -38,8 +39,13 @@ function Home() {
     getByBreed(selectedBreed, currentPage + 1, true);
   };
 
-  const viewCatCallback = (catId) => {
-    navigate(`/${catId}`);
+  const viewCatCallback = (cat) => {
+    dispatch({
+      type: SELECT_CAT,
+      payload: cat
+    });
+
+    navigate(`/${cat.id}`);
   };
 
   // API Calls
@@ -53,7 +59,10 @@ function Home() {
         });
       })
       .catch((err) => {
-        console.log(err);
+        dispatch({
+          type: SET_ERROR,
+          payload: GENERIC_ERROR
+        });
       });
   };
 
@@ -85,7 +94,10 @@ function Home() {
         }
       })
       .catch((err) => {
-        console.log(err);
+        dispatch({
+          type: SET_ERROR,
+          payload: GENERIC_ERROR
+        });
       })
       .finally(() => { setIsLoading(false) });
   };
@@ -119,7 +131,7 @@ function Home() {
             value={'id'} 
             text={'name'} 
             defaultLabel={'Breed'}
-            defaultValue={selectedBreed || searchParams.get('breed')}
+            defaultValue={selectedBreed}
             callback={selectCallback} 
             disabled={isLoading}  />
         </div>
@@ -131,7 +143,7 @@ function Home() {
             <div className="col-md-3 col-sm-6 col-12" key={cat.id}>
               <CatThumbnail 
                 imageUrl={cat.url}
-                data={cat.id}
+                data={cat}
                 callback={viewCatCallback} />
             </div>
           )
