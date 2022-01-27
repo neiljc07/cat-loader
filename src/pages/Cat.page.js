@@ -12,6 +12,17 @@ function Cat() {
   const { id } = useParams();
   const [selectedCat, setSelectedCat] = useState(null);
   const [isLoading, setIsLoading] = useState(true);
+  const [isError, setIsError] = useState(false);
+
+  const backErrorCallback = () => {
+    navigate('/', { replace: true });
+
+    // Reset Errors
+    dispatch({
+      type: SET_ERROR,
+      payload: null
+    });
+};
 
   useEffect(() => {
     // If the app can't find the cat object in app state
@@ -26,6 +37,8 @@ function Cat() {
             type: SET_ERROR,
             payload: GENERIC_ERROR
           });
+
+          setIsError(true);
         })
         .finally(() => {
           setIsLoading(false);
@@ -38,7 +51,16 @@ function Cat() {
   return (
     <div className="container">
       <div className="row">
-        <div className="col-sm-12 col-md-8 offset-md-2">
+        <div className="col">
+          {isError &&
+            <Button 
+              variant="primary" 
+              className="mb-2" 
+              onClick={backErrorCallback}>
+                Back
+            </Button>
+          }
+
           {isLoading &&
             <Alert variant="info">Loading...</Alert>
           }

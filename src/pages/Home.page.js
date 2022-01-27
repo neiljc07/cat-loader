@@ -43,7 +43,7 @@ function Home() {
     if(isLoading) {
       return;
     }
-    
+
     dispatch({
       type: SELECT_CAT,
       payload: cat
