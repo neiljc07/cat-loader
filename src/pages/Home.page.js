@@ -102,8 +102,8 @@ function Home() {
       .finally(() => { setIsLoading(false) });
   };
 
-  // Retrieve the value of the dropdown from the api on page load
   useEffect(() => {
+    // Retrieve the value of the dropdown from the api on page load
     getBreeds();
 
     // Check if there's a get variable and set default value for dropdown
