@@ -1,4 +1,8 @@
 ## Initial Setup
+
+Setup Dependencies
+### `npm install`
+
 On the config.json file, setup the API Key from https://thecatapi.com/
 
 ## Available Scripts
